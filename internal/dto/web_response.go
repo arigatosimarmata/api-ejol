@@ -1,4 +1,4 @@
-package domain
+package dto
 
 type WebResponse struct {
 	Message string      `json:"message"`

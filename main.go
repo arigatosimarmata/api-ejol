@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"time"
 
 	"bitbucket.bri.co.id/scm/ejol/api-ejol/config"
 	"bitbucket.bri.co.id/scm/ejol/api-ejol/internal/handlers"
@@ -16,10 +18,25 @@ import (
 func main() {
 	utils.InitLoadEnv()
 	app := fiber.New()
-	app.Use(logger.New())
+
+	fileLogName := os.Getenv("EJOL_DIRECTORY_LOG") + os.Getenv("SERVICE_LOG") + time.Now().Format("20060102") + ".log"
+
+	logFile, err := os.OpenFile(fileLogName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer logFile.Close()
+
+	app.Use(logger.New(logger.Config{
+		Format:       "${pid} ${time} ${method} ${path} ${body} ${status} ${latency}\n",
+		TimeFormat:   "2006-01-02 15:04:05",
+		TimeZone:     "Local",
+		TimeInterval: 500 * time.Millisecond,
+		Output:       logFile,
+	}))
 
 	// Initialize Database
-	db, err := config.ConnectDB()
+	db, err := config.DBConn("")
 	if err != nil {
 		fmt.Println("failed to init connection", err)
 		return
