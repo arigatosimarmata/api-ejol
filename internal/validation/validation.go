@@ -57,10 +57,6 @@ func MsgForTag(tag string, data interface{}) string {
 		tag = "invalid character"
 	}
 
-	// if strings.Contains(tag, "cannot unmarshal") {
-	// 	tag = "cannot unmarshal"
-	// }
-
 	switch tag {
 	case "required":
 		return "This field is required"
@@ -88,6 +84,8 @@ func MsgForTag(tag string, data interface{}) string {
 		return "this field contain invalid character"
 	case "cannot unmarshal":
 		return "this request is cannot be proceed."
+	case "sql: no rows in result set":
+		return "data not found " + fmt.Sprintf("%v", data)
 	}
 
 	return "This field required " + tag

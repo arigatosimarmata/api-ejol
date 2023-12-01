@@ -11,6 +11,7 @@ import (
 	"bitbucket.bri.co.id/scm/ejol/api-ejol/internal/domain"
 	"bitbucket.bri.co.id/scm/ejol/api-ejol/internal/dto"
 	"bitbucket.bri.co.id/scm/ejol/api-ejol/internal/repository"
+	"bitbucket.bri.co.id/scm/ejol/api-ejol/internal/validation"
 )
 
 type EjolUseCase struct {
@@ -80,14 +81,16 @@ func (eu *EjolUseCase) GetEjlogDB(request dto.EjolDBRequest) (domain.EjolDBRespo
 	var errors error
 	if request.Tid != "" {
 		get_mesin, errors = eu.repository.GetMesinByTID(request.Tid)
+		errors = fmt.Errorf("%s", validation.MsgForTag(errors.Error(), request.Tid))
 	}
 
 	if request.IpAddress != "" {
 		get_mesin, errors = eu.repository.GetMesinByIp(request.IpAddress)
+		errors = fmt.Errorf("%s", validation.MsgForTag(errors.Error(), request.IpAddress))
 	}
 
 	if errors != nil {
-		return out, fmt.Errorf("err:%v|tid / ip mesin not found %s", errors, get_mesin)
+		return out, fmt.Errorf("%v", errors)
 	}
 
 	if request.EndDate != "" {
@@ -117,7 +120,7 @@ func (eu *EjolUseCase) GetEjlogDB(request dto.EjolDBRequest) (domain.EjolDBRespo
 		Limit:     request.Limit,
 		Kanwil:    get_mesin.Kanwil,
 		Page:      request.Page,
-		DbName:    fmt.Sprintf("SAMPEL_ejlog_%s_%s", get_mesin.Kanwil, start_date.Format(config.YYYYMMDD)),
+		DbName:    fmt.Sprintf("ejlog_%s_%s", get_mesin.Kanwil, start_date.Format(config.YYYYMMDD)),
 		TableName: fmt.Sprintf("ej_%s", strings.ReplaceAll(request.IpAddress, ".", "_")),
 	}
 

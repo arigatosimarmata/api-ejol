@@ -54,6 +54,10 @@ func main() {
 	// Define Routes
 	app.Post("/api/ej-nfs", ejolHandler.GetEjlogNFS)
 	app.Post("/api/ej-db", ejolHandler.GetEjlogDB)
+	app.Post("/api/ej-shipment/ping", ejolHandler.PingEjshipment)
+	app.Post("/api/ej-shipment/search", ejolHandler.SearchEjshipment)
+	app.Post("/api/ej-shipment/restart", ejolHandler.SearchEjshipment)
+	app.Post("/api/ej-shipment/update", ejolHandler.SearchEjshipment)
 
 	// Start the server
 	log.Fatal(app.Listen(":3000"))
